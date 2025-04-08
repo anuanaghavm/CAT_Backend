@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -118,6 +119,10 @@ CORS_ALLOWED_ORIGINS = [
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+
+ZOOM_CLIENT_ID = config('ZOOM_CLIENT_ID')
+ZOOM_CLIENT_SECRET = config('ZOOM_CLIENT_SECRET')
+ZOOM_ACCOUNT_ID = config('ZOOM_ACCOUNT_ID')
 
 TIME_ZONE = 'UTC'
 
