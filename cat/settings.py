@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'booking',
     'form',
     'timeslot',
+    'corsheaders',
+
 ]
 
 MIDDLEWARE = [
@@ -50,6 +52,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # <--- Must be before CommonMiddleware
+
 ]
 
 ROOT_URLCONF = 'cat.urls'
@@ -84,8 +88,12 @@ DATABASES = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://localhost:5176",
+    "https://prep-backend-ho9l.onrender.com",
 ]
+
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
