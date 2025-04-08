@@ -20,5 +20,7 @@ from django.urls import path,include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('timeslot.urls')),  # This line includes your timeslot URLs
+    path('api/', include('form.urls')),  # This line includes your timeslot URLs
+
 
 ]
