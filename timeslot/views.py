@@ -18,7 +18,8 @@ class CreateTimeSlotView(APIView):
         session_type = request.data.get("session_type")
         start_time_str = request.data.get("start_time")  # e.g., "05:00 PM"
         end_time_str = request.data.get("end_time")      # e.g., "04:00 AM"
-
+        max_capacity = request.data.get("max_capacity")  # ✅ ADD THIS LINE
+        
         # ✅ Input validation
         missing_fields = []
         if not session_type:
@@ -27,7 +28,8 @@ class CreateTimeSlotView(APIView):
             missing_fields.append("start_time")
         if not end_time_str:
             missing_fields.append("end_time")
-
+        if not max_capacity:
+            missing_fields.append("max_capacity")
         if missing_fields:
             return Response(
                 {"error": f"Missing required field(s): {', '.join(missing_fields)}"},
@@ -56,7 +58,7 @@ class CreateTimeSlotView(APIView):
                     session_type=session_type,
                     start_time=current_time,
                     end_time=next_time,
-                    max_capacity=1 if session_type == "one_to_one" else 2
+                    max_capacity=int(max_capacity) if max_capacity else (1 if session_type == "one_to_one" else 2)
                 )
 
                 access_token = get_zoom_access_token()
@@ -118,6 +120,9 @@ class CreateBookingView(APIView):
             email = serializer.validated_data["email"]
             mobile = serializer.validated_data["mobile"]
             time_slot = serializer.validated_data["time_slot"]
+            # ✅ Only check for slot capacity now
+            if time_slot.bookings.count() >= time_slot.max_capacity:
+                return Response({"error": "This time slot is already full."}, status=400)
 
             existing_booking = Booking.objects.filter(
                 email=email,
