@@ -7,7 +7,7 @@ from django.db.models import Count, F
 from pytz import timezone as pytz_timezone
 from django.utils.timezone import make_aware
 from .zoom_utils import get_zoom_access_token, create_zoom_meeting
-
+from .email_utils import send_welcome_email
 from .models import TimeSlot, Booking
 from .serializers import TimeSlotSerializer, BookingSerializer
 
@@ -134,6 +134,7 @@ class CreateBookingView(APIView):
                 return Response({"error": "This time slot is already full."}, status=400)
 
             booking = serializer.save()
+            send_welcome_email(booking)  # ✅ Send email here
 
             start = booking.time_slot.start_time.astimezone(IST).strftime("%I:%M %p")
             end = booking.time_slot.end_time.astimezone(IST).strftime("%I:%M %p")
@@ -144,11 +145,12 @@ class CreateBookingView(APIView):
                     **serializer.data,
                     "start_time": start,
                     "end_time": end,
-                    "zoom_link": booking.time_slot.zoom_link  # ✅ Add this line
+                    "zoom_link": booking.time_slot.zoom_link
                 }
             }, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class SessionBasedSlotView(APIView):
     def get(self, request):

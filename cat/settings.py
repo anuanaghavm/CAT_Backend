@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'booking',
     'form',
     'timeslot',
     'corsheaders',
@@ -148,3 +147,15 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # ✅ Use smtp, not console
+
+EMAIL_HOST = 'smtp.zoho.in'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'pixelboho@zohomail.in'       # ✅ Your Zoho email
+EMAIL_HOST_PASSWORD = 'bDSJ@PRcXPN783N'          # ✅ App password (not your normal email password)
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
