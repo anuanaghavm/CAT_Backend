@@ -14,6 +14,7 @@ class TimeSlot(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     max_capacity = models.IntegerField(default=1)
+    zoom_link = models.URLField(blank=True, null=True)  # ADD THIS LINE
 
     def __str__(self):
         return f"{self.session_type} | {self.start_time.strftime('%b %d %I:%M %p')}"
@@ -37,3 +38,6 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.name} | {self.session_type} | {self.time_slot}"
+
+
+
