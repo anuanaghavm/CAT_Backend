@@ -195,3 +195,12 @@ class SessionBasedSlotView(APIView):
             "message": "Filtered session slots fetched.",
             "slots": result
         }, status=200)
+class CreatedSlotsListView(APIView):
+    def get(self, request):
+        slots = TimeSlot.objects.all().order_by("start_time")  # You can change to '-start_time' if needed
+
+        serializer = TimeSlotSerializer(slots, many=True)
+        return Response({
+            "message": "List of all created slots.",
+            "slots": serializer.data
+        }, status=status.HTTP_200_OK)
