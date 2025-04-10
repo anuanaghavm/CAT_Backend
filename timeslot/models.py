@@ -29,6 +29,8 @@ class TimeSlot(models.Model):
 class Booking(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    target = models.TextField()
     email = models.EmailField()
     mobile = models.CharField(max_length=15)
     session_type = models.CharField(max_length=20, choices=SESSION_TYPE_CHOICES)
