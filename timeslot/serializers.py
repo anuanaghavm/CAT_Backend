@@ -15,16 +15,22 @@ class TimeSlotSerializer(serializers.ModelSerializer):
     start_time = serializers.SerializerMethodField()
     end_time = serializers.SerializerMethodField()
     time_period = serializers.SerializerMethodField()
+    date = serializers.SerializerMethodField()
 
     class Meta:
         model = TimeSlot
-        fields = ['id', 'session_type', 'start_time', 'end_time', 'max_capacity', 'time_period','zoom_link']
+        fields = ['id', 'session_type', 'start_time', 'end_time', 'max_capacity', 'time_period','zoom_link','date']
 
     def get_start_time(self, obj):
         return obj.start_time.astimezone(IST).strftime("%I:%M %p")
 
     def get_end_time(self, obj):
         return obj.end_time.astimezone(IST).strftime("%I:%M %p")
+    
+
+    def get_date(self, obj):
+        return obj.start_time.astimezone(IST).strftime("%Y-%m-%d")
+
 
     def get_time_period(self, obj):
         hour = obj.start_time.astimezone(IST).hour

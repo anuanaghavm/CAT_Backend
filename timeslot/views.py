@@ -12,15 +12,15 @@ from .models import TimeSlot, Booking
 from .serializers import TimeSlotSerializer, BookingSerializer
 
 IST = pytz_timezone("Asia/Kolkata")
-
 class CreateTimeSlotView(APIView):
     def post(self, request):
         session_type = request.data.get("session_type")
         start_time_str = request.data.get("start_time")  # e.g., "05:00 PM"
         end_time_str = request.data.get("end_time")      # e.g., "04:00 AM"
-        max_capacity = request.data.get("max_capacity")  # ✅ ADD THIS LINE
-        
-        # ✅ Input validation
+        max_capacity = request.data.get("max_capacity")
+        date_str = request.data.get("date")              # e.g., "2025-04-12"
+
+        # Input validation
         missing_fields = []
         if not session_type:
             missing_fields.append("session_type")
@@ -30,6 +30,8 @@ class CreateTimeSlotView(APIView):
             missing_fields.append("end_time")
         if not max_capacity:
             missing_fields.append("max_capacity")
+        if not date_str:
+            missing_fields.append("date")
         if missing_fields:
             return Response(
                 {"error": f"Missing required field(s): {', '.join(missing_fields)}"},
@@ -37,15 +39,18 @@ class CreateTimeSlotView(APIView):
             )
 
         try:
-            today = datetime.now(IST).date()
+            # Parse date from string input
+            slot_date = datetime.strptime(date_str, "%Y-%m-%d").date()
 
-            # Parse time with today's date
-            start_dt = datetime.strptime(f"{today} {start_time_str}", "%Y-%m-%d %I:%M %p")
-            end_dt = datetime.strptime(f"{today} {end_time_str}", "%Y-%m-%d %I:%M %p")
+            # Combine date with time for full datetime
+            start_dt = datetime.strptime(f"{slot_date} {start_time_str}", "%Y-%m-%d %I:%M %p")
+            end_dt = datetime.strptime(f"{slot_date} {end_time_str}", "%Y-%m-%d %I:%M %p")
 
+            # Handle overnight slots (e.g., 10 PM to 2 AM next day)
             if end_dt <= start_dt:
                 end_dt += timedelta(days=1)
 
+            # Localize to IST
             start_dt = IST.localize(start_dt)
             end_dt = IST.localize(end_dt)
 
@@ -57,6 +62,8 @@ class CreateTimeSlotView(APIView):
                 slot = TimeSlot.objects.create(
                     session_type=session_type,
                     start_time=current_time,
+                    date=slot_date,  # ✅ Add this line
+
                     end_time=next_time,
                     max_capacity=int(max_capacity) if max_capacity else (1 if session_type == "one_to_one" else 2)
                 )
@@ -150,6 +157,8 @@ class CreateBookingView(APIView):
                     **serializer.data,
                     "start_time": start,
                     "end_time": end,
+                    "date": booking.time_slot.date.strftime("%Y-%m-%d"),
+
                     "zoom_link": booking.time_slot.zoom_link
                 }
             }, status=status.HTTP_201_CREATED)

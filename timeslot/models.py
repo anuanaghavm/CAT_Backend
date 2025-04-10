@@ -15,6 +15,7 @@ class TimeSlot(models.Model):
     end_time = models.DateTimeField()
     max_capacity = models.IntegerField(default=1)
     zoom_link = models.URLField(blank=True, null=True)  # ADD THIS LINE
+    date = models.DateField()  # optional if you want it separately
 
     def __str__(self):
         return f"{self.session_type} | {self.start_time.strftime('%b %d %I:%M %p')}"
