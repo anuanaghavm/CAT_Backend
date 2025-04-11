@@ -19,7 +19,8 @@ class TimeSlotSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TimeSlot
-        fields = ['id', 'session_type', 'start_time', 'end_time', 'max_capacity', 'time_period','zoom_link','date']
+        fields = ['id', 'session_type', 'start_time', 'end_time', 'max_capacity', 'time_period','zoom_link','date','created_at']
+        read_only_fields = ['created_at']
 
     def get_start_time(self, obj):
         return obj.start_time.astimezone(IST).strftime("%I:%M %p")
