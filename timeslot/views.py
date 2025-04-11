@@ -11,6 +11,8 @@ from .email_utils import send_welcome_email
 from .models import TimeSlot, Booking
 from .serializers import TimeSlotSerializer, BookingSerializer
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListAPIView
+
 
 IST = pytz_timezone("Asia/Kolkata")
 class CreateTimeSlotView(APIView):
@@ -218,3 +220,21 @@ class TimeSlotDetailView(RetrieveUpdateDestroyAPIView):
     queryset = TimeSlot.objects.all()
     serializer_class = TimeSlotSerializer
     lookup_field = 'id'
+class BookingDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+    lookup_field = 'id'
+
+
+class BookingListView(ListAPIView):
+    queryset = Booking.objects.all().order_by('-created_at')  # Optional: order by latest bookings
+    serializer_class = BookingSerializer
+class BookingDetailView(APIView):
+    def get(self, request):
+        slots = TimeSlot.objects.all().order_by("created_at")  # You can change to '-start_time' if needed
+
+        serializer = BookingSerializer(slots, many=True)
+        return Response({
+            "message": "List of all created slots.",
+            "slots": serializer.data
+        }, status=status.HTTP_200_OK)
