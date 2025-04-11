@@ -16,6 +16,7 @@ class TimeSlotSerializer(serializers.ModelSerializer):
     end_time = serializers.SerializerMethodField()
     time_period = serializers.SerializerMethodField()
     date = serializers.SerializerMethodField()
+    created_at = serializers.SerializerMethodField()
 
     class Meta:
         model = TimeSlot
@@ -43,6 +44,8 @@ class TimeSlotSerializer(serializers.ModelSerializer):
             return "Evening"
         else:
             return "Night"
+    def get_created_at(self, obj):
+        return obj.created_at.astimezone(IST).strftime("%I:%M %p") if obj.created_at else None
 
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
