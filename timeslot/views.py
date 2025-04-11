@@ -10,6 +10,7 @@ from .zoom_utils import get_zoom_access_token, create_zoom_meeting
 from .email_utils import send_welcome_email
 from .models import TimeSlot, Booking
 from .serializers import TimeSlotSerializer, BookingSerializer
+from rest_framework.generics import RetrieveUpdateDestroyAPIView
 
 IST = pytz_timezone("Asia/Kolkata")
 class CreateTimeSlotView(APIView):
@@ -213,3 +214,7 @@ class CreatedSlotsListView(APIView):
             "message": "List of all created slots.",
             "slots": serializer.data
         }, status=status.HTTP_200_OK)
+class TimeSlotDetailView(RetrieveUpdateDestroyAPIView):
+    queryset = TimeSlot.objects.all()
+    serializer_class = TimeSlotSerializer
+    lookup_field = 'id'

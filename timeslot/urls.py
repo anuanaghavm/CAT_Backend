@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import CreateTimeSlotView, CreateBookingView, AvailableSlotsView,SessionBasedSlotView,CreatedSlotsListView
+from .views import CreateTimeSlotView, CreateBookingView, AvailableSlotsView,SessionBasedSlotView,CreatedSlotsListView,TimeSlotDetailView
 
 urlpatterns = [
     path("slots/create/", CreateTimeSlotView.as_view(), name="create-slots"),
@@ -7,6 +7,7 @@ urlpatterns = [
     path("bookings/create/", CreateBookingView.as_view(), name="create-booking"),
     path("session-slots/", SessionBasedSlotView.as_view(), name="session-based-slots"),
     path("slots/list/", CreatedSlotsListView.as_view(), name="created-slots"),
+    path("slots/<int:id>/", TimeSlotDetailView.as_view(), name="slot-detail"),  # ✅ For GET, PUT, PATCH, DELETE
 
 
 ]
