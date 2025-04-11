@@ -17,7 +17,8 @@ class TimeSlot(models.Model):
     zoom_link = models.URLField(blank=True, null=True)  # ADD THIS LINE
     date = models.DateField()  # optional if you want it separately
     created_at = models.DateTimeField(auto_now_add=True)
-
+    course_name = models.CharField(max_length=100, blank=True, null=True)  # optional if you want it separately
+    time_duration = models.IntegerField(default=30)  # in minutes
     def __str__(self):
         return f"{self.session_type} | {self.start_time.strftime('%b %d %I:%M %p')}"
     

@@ -2,9 +2,9 @@
 import requests
 from base64 import b64encode
 
-CLIENT_ID = "X9Oz713ZTCqX6wzEPk8NQg"
-CLIENT_SECRET = "ydp6MfJZLCGBQbW10gibfj2rEdZA4PtB"
-ACCOUNT_ID = "1JQYGMKuTPCjSrGx3hEUKA"
+CLIENT_ID = "kqROnlPTSmU8m2rY716mQ"
+CLIENT_SECRET = "kk3jaxETogrckQbS3NpF2Lzt7iZl5IaU"
+ACCOUNT_ID = "ZCpCnNJ5RUC67n-0I1vH-g"
 
 def get_zoom_access_token():
     credentials = b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()

@@ -18,23 +18,27 @@ IST = pytz_timezone("Asia/Kolkata")
 class CreateTimeSlotView(APIView):
     def post(self, request):
         session_type = request.data.get("session_type")
-        start_time_str = request.data.get("start_time")  # e.g., "05:00 PM"
-        end_time_str = request.data.get("end_time")      # e.g., "04:00 AM"
+        start_time_str = request.data.get("start_time")
+        end_time_str = request.data.get("end_time")
         max_capacity = request.data.get("max_capacity")
-        date_str = request.data.get("date")              # e.g., "2025-04-12"
+        date_str = request.data.get("date")
+        course_name = request.data.get("course_name")  # ✅ Required
+        time_duration = request.data.get("time_duration")  # ✅ Required
 
-        # Input validation
+        # 🔍 Check for missing fields
         missing_fields = []
-        if not session_type:
-            missing_fields.append("session_type")
-        if not start_time_str:
-            missing_fields.append("start_time")
-        if not end_time_str:
-            missing_fields.append("end_time")
-        if not max_capacity:
-            missing_fields.append("max_capacity")
-        if not date_str:
-            missing_fields.append("date")
+        for field_name, value in {
+            "session_type": session_type,
+            "start_time": start_time_str,
+            "end_time": end_time_str,
+            "max_capacity": max_capacity,
+            "date": date_str,
+            "course_name": course_name,
+            "time_duration": time_duration
+        }.items():
+            if not value:
+                missing_fields.append(field_name)
+
         if missing_fields:
             return Response(
                 {"error": f"Missing required field(s): {', '.join(missing_fields)}"},
@@ -42,51 +46,51 @@ class CreateTimeSlotView(APIView):
             )
 
         try:
-            # Parse date from string input
             slot_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-
-            # Combine date with time for full datetime
             start_dt = datetime.strptime(f"{slot_date} {start_time_str}", "%Y-%m-%d %I:%M %p")
             end_dt = datetime.strptime(f"{slot_date} {end_time_str}", "%Y-%m-%d %I:%M %p")
 
-            # Handle overnight slots (e.g., 10 PM to 2 AM next day)
             if end_dt <= start_dt:
                 end_dt += timedelta(days=1)
 
-            # Localize to IST
             start_dt = IST.localize(start_dt)
             end_dt = IST.localize(end_dt)
+
+            time_duration = int(time_duration)
+            max_capacity = int(max_capacity)
 
             slots = []
             current_time = start_dt
             while current_time < end_dt:
-                next_time = current_time + timedelta(minutes=30)  # 🔁 30 minutes slot
+                next_time = current_time + timedelta(minutes=time_duration)
+
+                if next_time > end_dt:
+                    break
 
                 slot = TimeSlot.objects.create(
                     session_type=session_type,
                     start_time=current_time,
-                    date=slot_date,  # ✅ Add this line
-
                     end_time=next_time,
-                    max_capacity=int(max_capacity) if max_capacity else (1 if session_type == "one_to_one" else 2)
+                    max_capacity=max_capacity,
+                    date=slot_date,
+                    course_name=course_name,
+                    time_duration=time_duration
                 )
 
                 access_token = get_zoom_access_token()
                 meeting = create_zoom_meeting(
                     access_token,
-                    topic=f"Session for {session_type} slot",
+                    topic=f"{course_name} - {session_type}",
                     start_time=slot.start_time
                 )
-                zoom_link = meeting.get("join_url")
-
-                slot.zoom_link = zoom_link
+                slot.zoom_link = meeting.get("join_url")
                 slot.save()
 
                 slots.append(slot)
                 current_time = next_time
 
             return Response({
-                "message": "30-minute slots created successfully.",
+                "message": f"{time_duration}-minute slots created successfully.",
                 "slots": TimeSlotSerializer(slots, many=True).data
             }, status=status.HTTP_201_CREATED)
 

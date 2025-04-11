@@ -20,7 +20,7 @@ class TimeSlotSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TimeSlot
-        fields = ['id', 'session_type', 'start_time', 'end_time', 'max_capacity', 'time_period','zoom_link','date','created_at']
+        fields = ['id', 'session_type', 'start_time', 'end_time', 'max_capacity', 'time_period','zoom_link','date','created_at','course_name','time_duration']
         read_only_fields = ['created_at']
 
     def get_start_time(self, obj):
