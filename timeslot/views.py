@@ -57,7 +57,7 @@ class CreateTimeSlotView(APIView):
             slots = []
             current_time = start_dt
             while current_time < end_dt:
-                next_time = current_time + timedelta(hours=1)
+                next_time = current_time + timedelta(minutes=30)  # 🔁 30 minutes slot
 
                 slot = TimeSlot.objects.create(
                     session_type=session_type,
@@ -83,7 +83,7 @@ class CreateTimeSlotView(APIView):
                 current_time = next_time
 
             return Response({
-                "message": "Slots created successfully.",
+                "message": "30-minute slots created successfully.",
                 "slots": TimeSlotSerializer(slots, many=True).data
             }, status=status.HTTP_201_CREATED)
 

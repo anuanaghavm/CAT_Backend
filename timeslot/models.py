@@ -37,8 +37,7 @@ class Booking(models.Model):
     session_type = models.CharField(max_length=20, choices=SESSION_TYPE_CHOICES)
     time_slot = models.ForeignKey(TimeSlot, on_delete=models.CASCADE, related_name="bookings")
     created_at = models.DateTimeField(auto_now_add=True)
-    zoom_link = models.URLField(blank=True, null=True)  # ADD THIS LINE
-
+    zoom_link = models.URLField(blank=True, null=True)  
     def __str__(self):
         return f"{self.name} | {self.session_type} | {self.time_slot}"
 
