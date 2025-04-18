@@ -235,10 +235,9 @@ class BookingListView(ListAPIView):
     serializer_class = BookingSerializer
 class BookingDetailView(APIView):
     def get(self, request):
-        slots = TimeSlot.objects.all().order_by("created_at")  # You can change to '-start_time' if needed
-
-        serializer = BookingSerializer(slots, many=True)
+        bookings = Booking.objects.all().order_by("created_at")
+        serializer = BookingSerializer(bookings, many=True)
         return Response({
-            "message": "List of all created slots.",
-            "slots": serializer.data
+            "message": "List of all bookings with time slot details.",
+            "bookings": serializer.data
         }, status=status.HTTP_200_OK)

@@ -48,6 +48,17 @@ class TimeSlotSerializer(serializers.ModelSerializer):
         return obj.created_at.astimezone(IST).strftime("%I:%M %p") if obj.created_at else None
 
 class BookingSerializer(serializers.ModelSerializer):
+    created_at = serializers.SerializerMethodField()
+    time_slot = TimeSlotSerializer(read_only=True)
+
     class Meta:
         model = Booking
-        fields = "__all__"
+        fields = [
+            'id', 'uuid', 'name', 'last_name', 'target', 'email', 'mobile',
+            'session_type', 'created_at', 'zoom_link', 'time_slot'
+        ]
+
+    def get_created_at(self, obj):
+        if obj.created_at:
+            return obj.created_at.astimezone(IST).strftime("%Y-%m-%d")
+        return None
